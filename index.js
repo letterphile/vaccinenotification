@@ -93,7 +93,7 @@ axios(config)
 
 }
 let result;
-cron.schedule('* * * * * *', () => {
+cron.schedule('* * * * *', () => {
 //   console.log('running a task every minute');
   makeApiCall()
   
