@@ -43,7 +43,7 @@ const chekAvailabiliy = (centers) =>{
     }
 }
 
-const makeApiCall  = async () => {
+const makeApiCall  = async (id) => {
 
     var currentDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
     var day = currentDate.getDate()
@@ -74,9 +74,9 @@ const makeApiCall  = async () => {
         url: 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict',
         headers : {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"},
         params: {
-                  district_id: '307',
+                  district_id: id,
                    date:fDate
-              }
+                     }
     };
 let data;
 axios(config)
@@ -84,7 +84,7 @@ axios(config)
     //   console.log(response.data);
      data =  chekAvailabiliy(response.data.centers)
      if(data.length>0){
-        notificationObject.send('aswinactive@gmail.com','aswin4400@gmail.com','Hello from nodemailer',JSON.stringify(data))
+        notificationObject.send('aswinactive@gmail.com','aswin4400@gmail.com','FOUND A CENTER',JSON.stringify(data))
      }
   })
   .catch(err=>{
@@ -93,9 +93,25 @@ axios(config)
 
 }
 let result;
-cron.schedule('* * * * *', () => {
+cron.schedule('*/30 * * * * *', () => {
+  const options=[
+    {name:'Wayanad',id:299},
+    {name:'Thrissur',id:303},
+    {name:'Thiruvanathapuram',id:296},
+    {name:"Pathanamthitta",id:300},
+    {name:'Palakkad',id:308},
+    {name:'Malappuram',id:302},
+    {name:'Kozhikkode',id:305},
+    {name:"Kottayam",id:304},
+    {name:'Kollam',id:298},
+    {name:'Kasargode',id:295},
+    {name:'Kannur',id:297},
+    {name:'Idukki',id:306},
+    {name:'Ernakulam',id:307},
+    {name:'Alappuzha',id:301}
+  ]
 //   console.log('running a task every minute');
-  makeApiCall()
+  options.forEach((option)=>makeApiCall(option.id))
   
   
 });
