@@ -5,6 +5,22 @@ const Notification = require('./mailer');
 
 const notificationObject = new Notification();
 
+var options=[
+  {name:'Wayanad',id:299},
+  {name:'Thrissur',id:303},
+  {name:'Thiruvanathapuram',id:296},
+  {name:"Pathanamthitta",id:300},
+  {name:'Palakkad',id:308},
+  {name:'Malappuram',id:302},
+  {name:'Kozhikkode',id:305},
+  {name:"Kottayam",id:304},
+  {name:'Kollam',id:298},
+  {name:'Kasargode',id:295},
+  {name:'Kannur',id:297},
+  {name:'Idukki',id:306},
+  {name:'Ernakulam',id:307},
+  {name:'Alappuzha',id:301}
+]
 const chekAvailabiliy = (centers) =>{
     let available_centers = [];
     if(centers.length<=0){
@@ -22,7 +38,7 @@ const chekAvailabiliy = (centers) =>{
                 // console.log(j)
                 // console.log("center session",session)
             
-            if((parseInt(session.min_age_limit)<=18)&& (parseInt(session.available_capacity)>0)){
+            if((parseInt(session.min_age_limit)<=18) && (parseInt(session.available_capacity_dose1)>0) ){
 
 
             //     console.log()
@@ -33,8 +49,10 @@ const chekAvailabiliy = (centers) =>{
             // console.log("date",session.date),
             // console.log("min age limit",session.min_age_limit),
             // console.log("vaccine",session.vaccine)
-            available_centers.push({center:center.name,address:center.address,available_capacity:session.available_capacity,date:session.date,min_age_limit:session.min_age_limit,vaccine:session.vaccine})
-            }
+            
+            available_centers.push({center:center.name,address:center.address,available_capacity:session.available_capacity,date:session.date,min_age_limit:session.min_age_limit,vaccine:session.vaccine,dose1:session.available_capacity_dose1})
+            
+          }
             j++;
             }
             i++;
@@ -43,8 +61,8 @@ const chekAvailabiliy = (centers) =>{
     }
 }
 
-const makeApiCall  = async (id) => {
-
+const makeApiCall  = async (id,count) => {
+    console.log(count)
     var currentDate = new Date();
     var day = currentDate.getDate()
     day = parseInt(day)
@@ -83,8 +101,14 @@ axios(config)
   .then(response => {
     //   console.log(response.data);
      data =  chekAvailabiliy(response.data.centers)
+     
      if(data.length>0){
-        notificationObject.send('aswinactive@gmail.com','aswin4400@gmail.com','FOUND A CENTER',JSON.stringify(data))
+        const stringfied = JSON.stringify(data)
+        if(options[count].state!=stringfied){
+          options[count].state=stringfied
+          notificationObject.send('aswinactive@gmail.com','aswin4400@gmail.com','FOUND A CENTER',stringfied)
+        }
+        
      }
   })
   .catch(err=>{
@@ -93,25 +117,10 @@ axios(config)
 
 }
 let result;
-cron.schedule('*/30 * * * * *', () => {
-  const options=[
-    {name:'Wayanad',id:299},
-    {name:'Thrissur',id:303},
-    {name:'Thiruvanathapuram',id:296},
-    {name:"Pathanamthitta",id:300},
-    {name:'Palakkad',id:308},
-    {name:'Malappuram',id:302},
-    {name:'Kozhikkode',id:305},
-    {name:"Kottayam",id:304},
-    {name:'Kollam',id:298},
-    {name:'Kasargode',id:295},
-    {name:'Kannur',id:297},
-    {name:'Idukki',id:306},
-    {name:'Ernakulam',id:307},
-    {name:'Alappuzha',id:301}
-  ]
+cron.schedule('*/3 * * * * *', () => {
+ 
 //   console.log('running a task every minute');
-  options.forEach((option)=>makeApiCall(option.id))
+  options.forEach((option,count)=>makeApiCall(option.id,count))
   
   
 });
