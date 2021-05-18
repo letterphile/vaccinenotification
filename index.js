@@ -45,7 +45,7 @@ const chekAvailabiliy = (centers) =>{
 
 const makeApiCall  = async (id) => {
 
-    var currentDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+    var currentDate = new Date();
     var day = currentDate.getDate()
     day = parseInt(day)
     day = day.toLocaleString('en-US', {
